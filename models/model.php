@@ -7,6 +7,9 @@ class Model
   private $mAsignaturas = [];
   private $mHorarios = [];
   private $mEstudiantes = [];
+  private $mEstudiante = [];
+  private $bResultMatricula = false;
+  private $bResultUpMatricula = false;
   public function __construct()
   {
     $this->db = new PDO("mysql:host=" . HOST . ":" . PORT . ";dbname=" . DATB, USER, PASS);
@@ -72,6 +75,20 @@ class Model
     return $this->mEstudiantes;
   }
 
+  public function getEstudiante($iIdentificacion)
+  {
+    $qEstudiante = "SELECT e.*, m.FK_Id_Asignatura ";
+    $qEstudiante .= "FROM estudiantes AS e ";
+    $qEstudiante .= "JOIN matriculas m ON m.FK_Id_Estudiante = e.Id_Estudiante AND m.FK_Id_Estado = 1 ";
+    $qEstudiante .= "WHERE e.FK_Id_Estado = 1 ";
+    $qEstudiante .= "AND e.Identificacion = $iIdentificacion ";
+    $oEstudiante = $this->db->query($qEstudiante);
+    while ($mResult = $oEstudiante->FETCHALL(PDO::FETCH_ASSOC)) {
+      $this->mEstudiante = $mResult;
+    }
+    return $this->mEstudiante;
+  }
+
   public function crearEstudiante($mDatos)
   {
     $qEstudiante = "INSERT INTO estudiantes (Identificacion, Nombres, Apellidos, Fecha_Nacimiento, FK_Id_Ciudad, FK_Id_Genero, Fecha_Creacion, Fecha_Actualizacion, FK_Id_Estado) ";
@@ -81,23 +98,58 @@ class Model
       $qEstudiante = "SELECT * FROM estudiantes WHERE Identificacion = {$mDatos['ide']} ";
       $oEstudiante = $this->db->query($qEstudiante);
       $vEstudiante = $oEstudiante->FETCHALL(PDO::FETCH_ASSOC);
-      $bResultMatricula = $this->crearMatricula($vEstudiante[0]["Id_Estudiante"], $_POST);
-      $vResult = ["message" => "Estudiante Creado", "status" => $bResultMatricula];
-    } else {
-      $vResult = ["message" => "Ocurrio un error al crear el estudiante", "status" => false];
+      $this->bResultMatricula = $this->crearMatricula($vEstudiante[0]["Id_Estudiante"], $_POST);
     }
-    return $vResult;
+    return $this->bResultMatricula;
   }
 
   public function crearMatricula($iId_Estudiante, $mDatos)
   {
     $bMatricula = false;
     foreach ($mDatos["asig"] as $iAsignatura) {
-      $qMatricula = "INSERT INTO matriculas (FK_Id_Estudiante, FK_Id_Asignatura) ";
-      $qMatricula .= "VALUES ({$iId_Estudiante}, {$iAsignatura}) ";
+      $qMatricula = "INSERT INTO matriculas (FK_Id_Estudiante, FK_Id_Asignatura, FK_Id_Estado) ";
+      $qMatricula .= "VALUES ({$iId_Estudiante}, {$iAsignatura}, 1) ";
       $oResult = $this->db->query($qMatricula);
       if ($oResult) {
         $bMatricula = true;
+      }
+    }
+    return $bMatricula;
+  }
+
+  public function actualizarEstudiante($mDatos)
+  {
+    $qEstudiante = "UPDATE estudiantes SET Identificacion = {$mDatos['ide']}, Nombres = '{$mDatos['nom']}', Apellidos = '{$mDatos['ape']}', ";
+    $qEstudiante .= "Fecha_Nacimiento = '{$mDatos['fecNac']}', FK_Id_Ciudad = {$mDatos['ciu']}, FK_Id_Genero = {$mDatos['gen']}, Fecha_Actualizacion = NOW() ";
+    $qEstudiante .= "WHERE Id_Estudiante = {$mDatos['IdEst']}";
+    $oResult = $this->db->query($qEstudiante);
+    if ($oResult) {
+      $this->bResultUpMatricula = $this->actualizarMatricula($mDatos['IdEst'], $_POST);
+    }
+    return $this->bResultUpMatricula;
+  }
+
+  public function actualizarMatricula($iId_Estudiante, $mDatos)
+  {
+    $bMatricula = false;
+    $qInaMatriculas = "UPDATE matriculas SET FK_Id_Estado = 2 WHERE FK_Id_Estudiante = {$iId_Estudiante} ";
+    $oResult = $this->db->query($qInaMatriculas);
+    foreach ($mDatos["asig"] as $iAsignatura) {
+      $qConMatricula = "SELECT Id_Matricula FROM matriculas WHERE FK_Id_Estudiante = {$iId_Estudiante} AND FK_Id_Asignatura = {$iAsignatura} ";
+      $oConMatricula = $this->db->query($qConMatricula);
+      if ($oConMatricula->rowCount() == 0) {
+        $qMatricula = "INSERT INTO matriculas (FK_Id_Estudiante, FK_Id_Asignatura, FK_Id_Estado) ";
+        $qMatricula .= "VALUES ({$iId_Estudiante}, {$iAsignatura}, 1) ";
+        $oResult = $this->db->query($qMatricula);
+        if ($oResult) {
+          $bMatricula = true;
+        }
+      } else {
+        $qActMatriculas = "UPDATE matriculas SET FK_Id_Estado = 1 WHERE FK_Id_Estudiante = {$iId_Estudiante} AND FK_Id_Asignatura = {$iAsignatura} ";
+        $oResult = $this->db->query($qActMatriculas);
+        if ($oResult) {
+          $bMatricula = true;
+        }
       }
     }
     return $bMatricula;

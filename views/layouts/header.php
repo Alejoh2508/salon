@@ -18,7 +18,7 @@
         <div class="btn-group" role="group" aria-label="Basic example">
           <a href="/salon/index.php" class="btn btn-light btn-lg" role="button" aria-pressed="true">Crear</a>
           <a href="/salon/index.php?function=f_ListarTodo" class="btn btn-primary btn-lg" role="button" aria-pressed="true">Listar</a>
-          <a href="/salon/index.php?function=f_Ediar" class="btn btn-secondary btn-lg" role="button" aria-pressed="true">Actualizar</a>
+          <a href="/salon/index.php?function=f_Editar" class="btn btn-secondary btn-lg" role="button" aria-pressed="true">Actualizar</a>
           <a href="/salon/index.php?function=f_Eliminar" class="btn btn-danger btn-lg" role="button" aria-pressed="true">Eliminar</a>
         </div>
       </div>

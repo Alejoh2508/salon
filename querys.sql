@@ -86,9 +86,11 @@ CREATE TABLE `salon`.`matriculas` (
   `Id_Matricula` INT NOT NULL AUTO_INCREMENT COMMENT 'Id de Matricula' , 
   `FK_Id_Estudiante` INT NOT NULL COMMENT 'Referencia del estudiante' , 
   `FK_Id_Asignatura` INT NOT NULL COMMENT 'Referencia de la asignatura' , 
+  `FK_Id_Estado` INT NOT NULL COMMENT 'Referencia del estado' , 
   PRIMARY KEY (`Id_Matricula`, `FK_Id_Estudiante`, `FK_Id_Asignatura`),
   FOREIGN KEY (`FK_Id_Estudiante`) REFERENCES estudiantes(`Id_Estudiante`),
-  FOREIGN KEY (`FK_Id_Asignatura`) REFERENCES asignaturas(`Id_Asignatura`)
+  FOREIGN KEY (`FK_Id_Asignatura`) REFERENCES asignaturas(`Id_Asignatura`),
+  FOREIGN KEY (`FK_Id_Estado`) REFERENCES estados(`Id_Estado`)
 ) ENGINE = InnoDB CHARSET=utf8 COLLATE utf8_unicode_ci COMMENT = 'Matriculas de Asignaturas con Estudiantes';
 
 CREATE TABLE `salon`.`salones` (
