@@ -289,6 +289,7 @@ ALTER TABLE `estados`
 --
 ALTER TABLE `estudiantes`
   ADD PRIMARY KEY (`Id_Estudiante`),
+  ADD UNIQUE KEY `Identificacion` (`Identificacion`),
   ADD KEY `FK_Id_Ciudad` (`FK_Id_Ciudad`),
   ADD KEY `FK_Id_Genero` (`FK_Id_Genero`),
   ADD KEY `FK_Id_Estado` (`FK_Id_Estado`);
