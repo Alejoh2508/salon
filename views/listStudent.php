@@ -2,6 +2,9 @@
 require_once("layouts/header.php");
 ?>
 <div class="mx-auto col-12 text-center">
+  <div class="row">
+    <h2>Listado de Estudiantes</h2>
+  </div>
   <table class="table">
     <thead>
       <tr>

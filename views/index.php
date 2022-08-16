@@ -3,6 +3,9 @@ require_once("layouts/header.php");
 ?>
 <div class="row" id="divBasicos">
   <div class="mx-auto col-6">
+    <div class="row text-center">
+      <h2>Crear Estudiante</h2>
+    </div>
     <form class="row" id="frmCrear">
       <div class="mb-3">
         <label for="inpIdentificacion" class="form-label">Identificación</label>

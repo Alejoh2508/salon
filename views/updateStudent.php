@@ -2,6 +2,9 @@
 require_once("layouts/header.php");
 ?>
 <div class="mx-auto col-6">
+  <div class="row text-center">
+    <h2>Actualizar Estudiante</h2>
+  </div>
   <div class="input-group mb-3">
     <input type="text" class="form-control" id="inpIdentEst" placeholder="Ingrese Identificación del Estudiante" aria-label="Ingrese Identificación del Estudiante" aria-describedby="button-addon2">
     <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="f_BuscarEstudiante();">Buscar</button>

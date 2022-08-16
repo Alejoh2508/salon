@@ -1,6 +1,5 @@
 <?php
-class Model
-{
+class Model {
   private $db;
   private $mGeneros = [];
   private $mCiudades = [];
@@ -8,15 +7,15 @@ class Model
   private $mHorarios = [];
   private $mEstudiantes = [];
   private $mEstudiante = [];
+  private $mEstudianteDel = [];
   private $bResultMatricula = false;
   private $bResultUpMatricula = false;
-  public function __construct()
-  {
+  private $bResultDelEstudiante = false;
+  public function __construct() {
     $this->db = new PDO("mysql:host=" . HOST . ":" . PORT . ";dbname=" . DATB, USER, PASS);
   }
 
-  public function getGeneros()
-  {
+  public function getGeneros() {
     $qGeneros = "SELECT * FROM generos WHERE FK_Id_Estado = 1 ";
     $oGeneros = $this->db->query($qGeneros);
     while ($mResult = $oGeneros->FETCHALL(PDO::FETCH_ASSOC)) {
@@ -25,8 +24,7 @@ class Model
     return $this->mGeneros;
   }
 
-  public function getCiudades()
-  {
+  public function getCiudades() {
     $qCiudades = "SELECT * FROM ciudades WHERE FK_Id_Estado = 1 ";
     $oCiudades = $this->db->query($qCiudades);
     while ($mResult = $oCiudades->FETCHALL(PDO::FETCH_ASSOC)) {
@@ -35,8 +33,7 @@ class Model
     return $this->mCiudades;
   }
 
-  public function getAsignaturas()
-  {
+  public function getAsignaturas() {
     $qAsignaturas = "SELECT * FROM asignaturas WHERE FK_Id_Estado = 1 ";
     $oAsignaturas = $this->db->query($qAsignaturas);
     while ($mResult = $oAsignaturas->FETCHALL(PDO::FETCH_ASSOC)) {
@@ -45,8 +42,7 @@ class Model
     return $this->mAsignaturas;
   }
 
-  public function getHorarios($iIdAsignatura)
-  {
+  public function getHorarios($iIdAsignatura) {
     if (is_numeric($iIdAsignatura)) {
       $qHorarios = "SELECT h.*, s.Id_Salon, s.Nombre, s.Capacidad ";
       $qHorarios .= "FROM horarios AS h ";
@@ -61,8 +57,7 @@ class Model
     return $this->mHorarios;
   }
 
-  public function getEstudiantes()
-  {
+  public function getEstudiantes() {
     $qEstudiantes = "SELECT e.*, g.Descripcion, c.Nombre, s.Descripcion AS Estado ";
     $qEstudiantes .= "FROM estudiantes AS e ";
     $qEstudiantes .= "JOIN ciudades c ON c.Id_Ciudad = e.FK_Id_Ciudad ";
@@ -75,8 +70,7 @@ class Model
     return $this->mEstudiantes;
   }
 
-  public function getEstudiante($iIdentificacion)
-  {
+  public function getEstudiante($iIdentificacion) {
     $qEstudiante = "SELECT e.*, m.FK_Id_Asignatura ";
     $qEstudiante .= "FROM estudiantes AS e ";
     $qEstudiante .= "JOIN matriculas m ON m.FK_Id_Estudiante = e.Id_Estudiante AND m.FK_Id_Estado = 1 ";
@@ -89,8 +83,16 @@ class Model
     return $this->mEstudiante;
   }
 
-  public function crearEstudiante($mDatos)
-  {
+  public function getEstudianteDel($iIdentificacion) {
+    $qEstudiante = "SELECT * FROM estudiantes WHERE FK_Id_Estado = 1 AND Identificacion = $iIdentificacion ";
+    $oEstudiante = $this->db->query($qEstudiante);
+    while ($mResult = $oEstudiante->FETCHALL(PDO::FETCH_ASSOC)) {
+      $this->mEstudianteDel = $mResult;
+    }
+    return $this->mEstudianteDel;
+  }
+
+  public function crearEstudiante($mDatos) {
     $qEstudiante = "INSERT INTO estudiantes (Identificacion, Nombres, Apellidos, Fecha_Nacimiento, FK_Id_Ciudad, FK_Id_Genero, Fecha_Creacion, Fecha_Actualizacion, FK_Id_Estado) ";
     $qEstudiante .= "VALUES ({$mDatos['ide']}, '{$mDatos['nom']}', '{$mDatos['ape']}', '{$mDatos['fecNac']}', {$mDatos['ciu']}, {$mDatos['gen']}, NOW(), NOW(), 1)";
     $oResult = $this->db->query($qEstudiante);
@@ -103,8 +105,7 @@ class Model
     return $this->bResultMatricula;
   }
 
-  public function crearMatricula($iId_Estudiante, $mDatos)
-  {
+  public function crearMatricula($iId_Estudiante, $mDatos) {
     $bMatricula = false;
     foreach ($mDatos["asig"] as $iAsignatura) {
       $qMatricula = "INSERT INTO matriculas (FK_Id_Estudiante, FK_Id_Asignatura, FK_Id_Estado) ";
@@ -117,8 +118,7 @@ class Model
     return $bMatricula;
   }
 
-  public function actualizarEstudiante($mDatos)
-  {
+  public function actualizarEstudiante($mDatos) {
     $qEstudiante = "UPDATE estudiantes SET Identificacion = {$mDatos['ide']}, Nombres = '{$mDatos['nom']}', Apellidos = '{$mDatos['ape']}', ";
     $qEstudiante .= "Fecha_Nacimiento = '{$mDatos['fecNac']}', FK_Id_Ciudad = {$mDatos['ciu']}, FK_Id_Genero = {$mDatos['gen']}, Fecha_Actualizacion = NOW() ";
     $qEstudiante .= "WHERE Id_Estudiante = {$mDatos['IdEst']}";
@@ -129,8 +129,7 @@ class Model
     return $this->bResultUpMatricula;
   }
 
-  public function actualizarMatricula($iId_Estudiante, $mDatos)
-  {
+  public function actualizarMatricula($iId_Estudiante, $mDatos) {
     $bMatricula = false;
     $qInaMatriculas = "UPDATE matriculas SET FK_Id_Estado = 2 WHERE FK_Id_Estudiante = {$iId_Estudiante} ";
     $oResult = $this->db->query($qInaMatriculas);
@@ -153,5 +152,18 @@ class Model
       }
     }
     return $bMatricula;
+  }
+
+  public function f_EliminarEstudiante($mDatos) {
+    $qMatriculas = "DELETE FROM matriculas WHERE FK_Id_Estudiante = {$mDatos['IdEst']} ";
+    $oResultM = $this->db->query($qMatriculas);
+    if ($oResultM) {
+      $qEstudiante = "DELETE FROM estudiantes WHERE Id_Estudiante = {$mDatos['IdEst']} ";
+      $oResult = $this->db->query($qEstudiante);
+      if ($oResult) {
+        $this->bResultDelEstudiante = true;
+      }
+    }
+    return $this->bResultDelEstudiante;
   }
 }

@@ -125,6 +125,7 @@ function f_BuscarEstudiante() {
     alert("Debe digitar una identificación");
   }
 }
+
 function f_Actualizar() {
   if ($('#inpIdentificacion').val() == '' || $('#inpNombres').val() == '' || $('#inpApellidos').val() == '' || $('#inpFechaNacimiento').val() == '' || $('#slcGenero').val() == '' || $('#slcCiudad').val() == '') {
     alert("Debe rellenar el formulario");
@@ -133,6 +134,53 @@ function f_Actualizar() {
       data: $('#frmActualizar').serialize(),
       type: "POST",
       url: "/salon/index.php?function=f_Actualizar",
+      dataType: "json",
+      success: function (data) {
+        alert(data.message);
+        if (data.status) {
+          location.reload();
+        }
+      }
+    });
+  }
+}
+
+function f_BuscarEstudianteDel() {
+  if ($("#inpIdentEst").val() != '') {
+    $.ajax({
+      data: { identificacion: $("#inpIdentEst").val() },
+      type: "POST",
+      url: "/salon/index.php?function=f_BuscarEstudianteDel",
+      dataType: "json",
+      success: function (data) {
+        $("#inpIdentEst").val('')
+        if (data.length > 0) {
+          $('#frmEliminar').trigger("reset");
+          $("#inpIdEstudiante").val(data[0].Id_Estudiante);
+          $("#inpIdentificacion").val(data[0].Identificacion);
+          $("#inpNombres").val(data[0].Nombres);
+          $("#inpApellidos").val(data[0].Apellidos);
+          $('#frmEliminar').removeClass("d-none").addClass("d-block");
+        } else {
+          $('#frmEliminar').trigger("reset");
+          $('#frmEliminar').removeClass("d-block").addClass("d-none");
+          alert("No se encontro ningún estudiante con la identificación digitada");
+        }
+      }
+    });
+  } else {
+    $('#frmEliminar').trigger("reset");
+    $('#frmEliminar').removeClass("d-block").addClass("d-none");
+    alert("Debe digitar una identificación");
+  }
+}
+
+function f_Eliminar() {
+  if (window.confirm("Realmente desea eliminar al estudiante?")) {
+    $.ajax({
+      data: $('#frmEliminar').serialize(),
+      type: "POST",
+      url: "/salon/index.php?function=f_EliminarEstudiante",
       dataType: "json",
       success: function (data) {
         alert(data.message);
