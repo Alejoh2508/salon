@@ -98,11 +98,16 @@ class Controller {
 
   public function f_EliminarEstudiante() {
     $oModelo = new Model();
-    $bResultDel = $oModelo->f_EliminarEstudiante($_POST);
+    $bResultDel = $oModelo->eliminarEstudiante($_POST);
     $vResult = ["message" => "Ocurrio un error al eliminar el estudiante", "status" => false];
     if ($bResultDel) {
       $vResult = ["message" => "Estudiante Eliminado", "status" => $bResultDel];
     }
     echo json_encode($vResult);
+  }
+
+  public function f_DetalleEstudiante() {
+    $oModelo = new Model();
+    echo json_encode($oModelo->getDetalle($_POST["IdEstudiante"]));
   }
 }

@@ -191,3 +191,45 @@ function f_Eliminar() {
     });
   }
 }
+
+function f_DetalleEstudiante(IdEstudiante) {
+  $.ajax({
+    data: { IdEstudiante: IdEstudiante },
+    type: "POST",
+    url: "/salon/index.php?function=f_DetalleEstudiante",
+    dataType: "json",
+    success: function (data) {
+      let fieldset = '';
+      $.each(data, function (indx, elem) {
+        fieldset += `<fieldset class="border border-success p-2 mb-2">
+          <legend>${indx}</legend>
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th scope="col">Id Horario</th>
+                <th scope="col">Día</th>
+                <th scope="col">Hora Inicio</th>
+                <th scope="col">Hora Fin</th>
+                <th scope="col">Salón</th>
+                <th scope="col">Capacidad</th>
+              </tr>
+            </thead>
+            <tbody>`;
+        $.each(elem, function (ind, dato) {
+          fieldset += `<tr>
+              <td>${dato.Id_Horario}</td>
+              <td>${dato.Dia}</td>
+              <td>${dato.Hora_Inicio}</td>
+              <td>${dato.Hora_Fin}</td>
+              <td>${dato.Nombre}</td>
+              <td>${dato.Capacidad}</td>
+            </tr>`;
+        });
+        fieldset += `</tbody >
+          </table >
+        </fieldset > `;
+      });
+      $("#mdlBody").append(fieldset);
+    }
+  });
+}
