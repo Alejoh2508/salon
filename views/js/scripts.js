@@ -20,7 +20,8 @@ function f_Horario(Id_Asignatura, ind) {
 }
 
 function f_AddFieldset() {
-  let ind = $('#divControlEstudiantes').length;
+  let ind = $('fieldset').length;
+  console.log("mire >", ind)
   var options = `<option value="" selected>--Seleccione--</option>`;
   $.ajax({
     url: "/salon/index.php?function=f_Asignaturas",

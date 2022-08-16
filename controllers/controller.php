@@ -46,7 +46,16 @@ class Controller
     }
   }
 
-  public function f_listarTodo() {
-    
+  public function f_ListarTodo()
+  {
+    $oModelo = new Model();
+    $mEstudiantes = $oModelo->getEstudiantes();
+    require_once("views/listStudent.php");
+  }
+
+  public function f_Editar()
+  {
+    $oModelo = new Model();
+    require_once("views/listStudent.php");
   }
 }

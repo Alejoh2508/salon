@@ -1,15 +1,14 @@
 <?php
 class Model
 {
-  // private $modelo;
   private $db;
   private $mGeneros = [];
   private $mCiudades = [];
   private $mAsignaturas = [];
   private $mHorarios = [];
+  private $mEstudiantes = [];
   public function __construct()
   {
-    // $this->modelo = array();
     $this->db = new PDO("mysql:host=" . HOST . ":" . PORT . ";dbname=" . DATB, USER, PASS);
   }
 
@@ -57,6 +56,20 @@ class Model
       }
     }
     return $this->mHorarios;
+  }
+
+  public function getEstudiantes()
+  {
+    $qEstudiantes = "SELECT e.*, g.Descripcion, c.Nombre, s.Descripcion AS Estado ";
+    $qEstudiantes .= "FROM estudiantes AS e ";
+    $qEstudiantes .= "JOIN ciudades c ON c.Id_Ciudad = e.FK_Id_Ciudad ";
+    $qEstudiantes .= "JOIN generos g ON g.Id_Genero = e.FK_Id_Genero ";
+    $qEstudiantes .= "JOIN estados s ON s.Id_Estado = e.FK_Id_Estado ";
+    $oEstudiantes = $this->db->query($qEstudiantes);
+    while ($mResult = $oEstudiantes->FETCHALL(PDO::FETCH_ASSOC)) {
+      $this->mEstudiantes = $mResult;
+    }
+    return $this->mEstudiantes;
   }
 
   public function crearEstudiante($mDatos)
